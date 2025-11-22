@@ -1,90 +1,125 @@
+import java.util.*
+
 fun main() {
+    val scanner = Scanner(System.`in`)
+
     while (true) {
-        println("\n=== ВЫБЕРИТЕ ЗАДАНИЕ ===")
-        println("1 - Двумерный массив с различными цифрами")
-        println("2 - Проверка симметрии матрицы")
-        println("3 - Шифрование русскими буквами")
+        println("\n=== ВЫБЕРИТЕ ЗАДАЧУ ===")
+        println("1 - Подсчет различных цифр в массиве")
+        println("2 - Проверка симметрии массива")
+        println("3 - Шифровка и дешифровка")
         println("4 - Пересечение массивов")
         println("5 - Группировка слов по буквам")
         println("0 - Выход")
         print("Ваш выбор: ")
 
-        when (readLine()!!.trim()) {
+        val choice = scanner.nextLine()
+
+        when (choice) {
             "1" -> task1()
             "2" -> task2()
             "3" -> task3()
             "4" -> task4()
             "5" -> task5()
             "0" -> {
-                println("Выход из программы.")
-                return
+                println("До свидания!")
+                break
             }
-            else -> println("Неверный выбор! Попробуйте снова.")
+            else -> println("Ошибка! Введите число от 0 до 5")
         }
     }
 }
 
-// Задание 1
+// Задача 1
 fun task1() {
-    println("\n=== ЗАДАНИЕ 1 ===")
+    println("\n=== ЗАДАЧА 1 ===")
+    val scanner = Scanner(System.`in`)
 
-    print("Введите количество строк: ")
-    val rows = readLine()!!.toInt()
-    print("Введите количество столбцов: ")
-    val cols = readLine()!!.toInt()
+    try {
+        print("Введите количество строк: ")
+        val rows = scanner.nextInt()
+        print("Введите количество столбцов: ")
+        val cols = scanner.nextInt()
 
-    val matrix = Array(rows) { IntArray(cols) }
-
-    println("Введите $rows строк по $cols трехзначных чисел (через пробел):")
-    for (i in 0 until rows) {
-        print("Строка ${i + 1}: ")
-        val numbers = readLine()!!.split(" ")
-        for (j in 0 until cols) {
-            matrix[i][j] = numbers[j].toInt()
+        if (rows <= 0 || cols <= 0) {
+            println("Ошибка! Количество строк и столбцов должно быть больше 0")
+            return
         }
-    }
 
-    val allDigits = mutableSetOf<Char>()
-    for (i in 0 until rows) {
-        for (j in 0 until cols) {
-            val number = matrix[i][j].toString()
-            for (digit in number) {
-                allDigits.add(digit)
+        val array = Array(rows) { IntArray(cols) }
+        println("Введите $rows строк по $cols трехзначных чисел:")
+
+        for (i in 0 until rows) {
+            for (j in 0 until cols) {
+                val number = scanner.nextInt()
+                if (number < 100 || number > 999) {
+                    println("Ошибка! Число должно быть трехзначным")
+                    return
+                }
+                array[i][j] = number
             }
         }
-    }
 
-    println("\nДвумерный массив:")
-    for (i in 0 until rows) {
-        for (j in 0 until cols) {
-            print("${matrix[i][j]}\t")
+        println("\nВведенный массив:")
+        for (i in 0 until rows) {
+            for (j in 0 until cols) {
+                print("${array[i][j]}\t")
+            }
+            println()
+        }
+
+        val digits = BooleanArray(10)
+
+        for (i in 0 until rows) {
+            for (j in 0 until cols) {
+                var number = array[i][j]
+                while (number > 0) {
+                    val digit = number % 10
+                    digits[digit] = true
+                    number /= 10
+                }
+            }
+        }
+
+        var count = 0
+        for (i in 0 until 10) {
+            if (digits[i]) {
+                count++
+            }
+        }
+
+        println("В массиве использовано $count различных цифр")
+
+    } catch (e: Exception) {
+        println("Ошибка! Проверьте правильность ввода")
+    }
+}
+
+// Задача 2
+fun task2() {
+    println("\n=== ЗАДАЧА 2 ===")
+
+    val array = arrayOf(
+        intArrayOf(5, 9, 6, 7, 2),
+        intArrayOf(9, 8, 4, 5, 3),
+        intArrayOf(6, 4, 3, 8, 7),
+        intArrayOf(7, 5, 8, 4, 8),
+        intArrayOf(2, 3, 7, 8, 1)
+    )
+
+    println("Массив 5x5:")
+    for (i in 0 until 5) {
+        for (j in 0 until 5) {
+            print("${array[i][j]}\t")
         }
         println()
     }
 
-    println("В массиве использовано ${allDigits.size} различных цифр")
-}
-
-// Задание 2
-fun task2() {
-    println("\n=== ЗАДАНИЕ 2 ===")
-
-    val size = 5
-    val matrix = Array(size) { IntArray(size) }
-
-    println("Введите матрицу 5x5 (5 строк по 5 чисел через пробел):")
-    for (i in 0 until size) {
-        print("Строка ${i + 1}: ")
-        val numbers = readLine()!!.split(" ").map { it.toInt() }
-        for (j in 0 until size) {
-            matrix[i][j] = numbers[j]
-        }
-    }
-
     var symmetric = true
-    for (i in 0 until size) {
-        for (j in i + 1 until size) {
-            if (matrix[i][j] != matrix[j][i]) {
+
+    for (i in 0 until 5) {
+        for (j in 0 until 5) {
+            if (array[i][j] != array[j][i]) {
                 symmetric = false
                 break
             }
@@ -92,152 +127,169 @@ fun task2() {
         if (!symmetric) break
     }
 
-    println("\nМатрица:")
-    for (i in 0 until size) {
-        for (j in 0 until size) {
-            print("${matrix[i][j]}\t")
-        }
-        println()
-    }
-
     if (symmetric) {
-        println("Матрица симметрична относительно главной диагонали")
+        println("Массив симметричен относительно главной диагонали")
     } else {
-        println("Матрица НЕ симметрична относительно главной диагонали")
+        println("Массив НЕ симметричен относительно главной диагонали")
     }
 }
 
-// Задание 3
+// Задача 3
 fun task3() {
-    println("\n=== ЗАДАНИЕ 3 ===")
+    println("\n=== ЗАДАЧА 3 ===")
+    val scanner = Scanner(System.`in`)
 
-    val letters = arrayOf('А', 'Б', 'В', 'Г', 'Д', 'Е', 'Ё', 'Ж', 'З', 'И', 'Й', 'К', 'Л', 'М', 'Н', 'О', 'П', 'Р', 'С', 'Т', 'У', 'Ф', 'Х', 'Ц', 'Ч', 'Ш', 'Щ', 'Ъ', 'Ы', 'Ь', 'Э', 'Ю', 'Я')
-    val numbers = arrayOf(21, 13, 4, 20, 22, 1, 25, 12, 24, 14, 2, 28, 9, 23, 3, 29, 6, 16, 15, 11, 26, 5, 30, 27, 8, 18, 10, 33, 31, 32, 19, 7, 17)
+    val alphabet = "АБВГДЕЁЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
 
-    println("Выберите действие:")
-    println("1 - Зашифровать")
-    println("2 - Расшифровать")
-    val choice = readLine()!!
+    val charNumbers = mapOf(
+        'А' to 21, 'Б' to 13, 'В' to 4, 'Г' to 20, 'Д' to 22,
+        'Е' to 1, 'Ё' to 25, 'Ж' to 12, 'З' to 24, 'И' to 14,
+        'Й' to 2, 'К' to 28, 'Л' to 9, 'М' to 23, 'Н' to 3,
+        'О' to 29, 'П' to 6, 'Р' to 16, 'С' to 15, 'Т' to 11,
+        'У' to 26, 'Ф' to 5, 'Х' to 30, 'Ц' to 27, 'Ч' to 8,
+        'Ш' to 18, 'Щ' to 10, 'Ъ' to 33, 'Ы' to 31, 'Ь' to 32,
+        'Э' to 19, 'Ю' to 7, 'Я' to 17
+    )
 
-    print("Введите текст: ")
-    val text = readLine()!!.uppercase()
+    val numberToChar = mutableMapOf<Int, Char>()
+    for ((char, number) in charNumbers) {
+        numberToChar[number] = char
+    }
+
+    print("Выберите действие (1 - зашифровать, 2 - расшифровать): ")
+    val action = scanner.nextLine()
 
     print("Введите ключевое слово: ")
-    val key = readLine()!!.uppercase()
+    val key = scanner.nextLine().uppercase().replace(" ", "")
 
-    var result = ""
-    var keyIndex = 0
+    print("Введите текст: ")
+    val text = scanner.nextLine().uppercase().replace(" ", "")
+
+    if (key.isEmpty() || text.isEmpty()) {
+        println("Ошибка! Ключ и текст не могут быть пустыми")
+        return
+    }
+
+    for (char in key) {
+        if (!charNumbers.containsKey(char)) {
+            println("Ошибка! Символ '$char' из ключа не найден в алфавите")
+            return
+        }
+    }
 
     for (char in text) {
-        if (char == ' ') {
-            result += ' '
-            continue
+        if (!charNumbers.containsKey(char)) {
+            println("Ошибка! Символ '$char' из текста не найден в алфавите")
+            return
         }
-
-        var textNumber = 0
-        for (i in letters.indices) {
-            if (letters[i] == char) {
-                textNumber = numbers[i]
-                break
-            }
-        }
-
-        val keyChar = key[keyIndex % key.length]
-        var keyNumber = 0
-        for (i in letters.indices) {
-            if (letters[i] == keyChar) {
-                keyNumber = numbers[i]
-                break
-            }
-        }
-        keyIndex++
-
-        var newNumber = 0
-        if (choice == "1") {
-            newNumber = textNumber + keyNumber
-            if (newNumber > 33) newNumber -= 33
-        } else {
-            newNumber = textNumber - keyNumber
-            if (newNumber < 1) newNumber += 33
-        }
-
-        var newChar = char
-        for (i in numbers.indices) {
-            if (numbers[i] == newNumber) {
-                newChar = letters[i]
-                break
-            }
-        }
-
-        result += newChar
     }
 
-    if (choice == "1") {
+    if (action == "1") {
+        var result = ""
+
+        for (i in text.indices) {
+            val textChar = text[i]
+            val keyChar = key[i % key.length]
+
+            val textNumber = charNumbers[textChar]!!
+            val keyNumber = charNumbers[keyChar]!!
+
+            val newNumber = (textNumber + keyNumber - 1) % 33 + 1
+
+            result += numberToChar[newNumber]!!
+        }
+
         println("Зашифрованный текст: $result")
-    } else {
-        println("Расшифрованный текст: $result")
-    }
-}
 
-// Задание 4
-fun task4() {
-    println("\n=== ЗАДАНИЕ 4 ===")
+    } else if (action == "2") {
+        var result = ""
 
-    print("Введите первый массив (числа через пробел): ")
-    val arr1 = readLine()!!.split(" ").map { it.toInt() }
+        for (i in text.indices) {
+            val textChar = text[i]
+            val keyChar = key[i % key.length]
 
-    print("Введите второй массив (числа через пробел): ")
-    val arr2 = readLine()!!.split(" ").map { it.toInt() }
+            val textNumber = charNumbers[textChar]!!
+            val keyNumber = charNumbers[keyChar]!!
 
-    val list1 = arr1.toMutableList()
-    val list2 = arr2.toMutableList()
-    val result = mutableListOf<Int>()
-
-    for (num in list1) {
-        if (num in list2) {
-            result.add(num)
-            list2.remove(num)
-        }
-    }
-
-    println("Первый массив: ${arr1.joinToString()}")
-    println("Второй массив: ${arr2.joinToString()}")
-    println("Пересечение: ${result.joinToString()}")
-}
-
-// Задание 5
-fun task5() {
-    println("\n=== ЗАДАНИЕ 5 ===")
-
-    print("Введите слова через пробел: ")
-    val words = readLine()!!.split(" ")
-
-    val groups = mutableListOf<MutableList<String>>()
-    val used = BooleanArray(words.size) { false }
-
-    for (i in words.indices) {
-        if (!used[i]) {
-            val group = mutableListOf<String>()
-            group.add(words[i])
-            used[i] = true
-
-            val sorted1 = words[i].toCharArray().sorted().joinToString("")
-
-            for (j in i + 1 until words.size) {
-                if (!used[j]) {
-                    val sorted2 = words[j].toCharArray().sorted().joinToString("")
-                    if (sorted1 == sorted2) {
-                        group.add(words[j])
-                        used[j] = true
-                    }
-                }
+            var originalNumber = textNumber - keyNumber + 1
+            if (originalNumber <= 0) {
+                originalNumber += 33
             }
-            groups.add(group)
-        }
-    }
 
-    println("Группы слов:")
-    for (group in groups) {
-        println(group.joinToString(", "))
+            result += numberToChar[originalNumber]!!
+        }
+
+        println("Расшифрованный текст: $result")
+
+    } else {
+        println("Ошибка! Выберите 1 или 2")
+    }
+}
+
+// Задача 4
+fun task4() {
+    println("\n=== ЗАДАЧА 4 ===")
+    val scanner = Scanner(System.`in`)
+
+    try {
+        println("Введите первый массив чисел через пробел:")
+        val input1 = scanner.nextLine()
+        val array1 = input1.split(" ").map { it.toInt() }
+
+        println("Введите второй массив чисел через пробел:")
+        val input2 = scanner.nextLine()
+        val array2 = input2.split(" ").map { it.toInt() }
+
+        val list1 = array1.toMutableList()
+        val list2 = array2.toMutableList()
+        val result = mutableListOf<Int>()
+
+        for (num in list1) {
+            if (list2.contains(num)) {
+                result.add(num)
+                list2.remove(num)
+            }
+        }
+
+        println("Первый массив: ${array1.joinToString()}")
+        println("Второй массив: ${array2.joinToString()}")
+        println("Пересечение: ${result.joinToString()}")
+
+    } catch (e: Exception) {
+        println("Ошибка! Проверьте правильность ввода чисел")
+    }
+}
+
+// Задача 5
+fun task5() {
+    println("\n=== ЗАДАЧА 5 ===")
+    val scanner = Scanner(System.`in`)
+
+    try {
+        println("Введите слова через пробел:")
+        val input = scanner.nextLine()
+        val words = input.split(" ").map { it.trim() }
+
+        val groups = mutableMapOf<String, MutableList<String>>()
+
+        for (word in words) {
+            val sortedLetters = word.toCharArray().sorted().joinToString("")
+
+            if (groups.containsKey(sortedLetters)) {
+                groups[sortedLetters]!!.add(word)
+            } else {
+                groups[sortedLetters] = mutableListOf(word)
+            }
+        }
+
+        println("Группы слов:")
+        for ((_, groupWords) in groups) {
+            if (groupWords.size > 0) {
+                println(groupWords.joinToString(", "))
+            }
+        }
+
+    } catch (e: Exception) {
+        println("Ошибка! Проверьте правильность ввода")
     }
 }
